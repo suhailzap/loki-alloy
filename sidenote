@@ -1,3 +1,11 @@
+ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' c284101f9df1
+172.23.0.2
+Grafana and Prometheus are both deployed using Docker?
+
+The localhost of one container is not the localhost of another container, even if you published the port to the host – you can't reach the Prometheus container or the host using localhost from the Grafana container. You need to use the IP address of the Prometheus container, or the hostname if you are using Docker Compose.
+
+If you need further help, please post your Docker configs (docker-compose.yml or docker run commands).
+
 sudo apt install python3-pip
 
 
