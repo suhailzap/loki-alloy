@@ -1,3 +1,8 @@
+sudo apt install python3-pip
+
+
+
+
 The issue you're facing with the Docker build process is due to network connectivity problems, specifically the inability to resolve DNS while trying to install Python packages via `pip`. Here are steps you can follow to resolve this:
 
 ### Steps to Fix Network Connectivity in Docker
