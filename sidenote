@@ -1,0 +1,76 @@
+The issue you're facing with the Docker build process is due to network connectivity problems, specifically the inability to resolve DNS while trying to install Python packages via `pip`. Here are steps you can follow to resolve this:
+
+### Steps to Fix Network Connectivity in Docker
+
+1. **Check Your Network Configuration**:
+   Ensure your host machine has internet access and DNS resolution works properly.
+
+   ```bash
+   ping google.com
+   nslookup google.com
+   ```
+
+2. **Configure Docker DNS**:
+   You can configure Docker to use a specific DNS server. Create or edit the Docker daemon configuration file `/etc/docker/daemon.json` and add the DNS settings.
+
+   ```bash
+   sudo nano /etc/docker/daemon.json
+   ```
+
+   Add the following content:
+
+   ```json
+   {
+     "dns": ["8.8.8.8", "8.8.4.4"]
+   }
+   ```
+
+   Save and exit the file, then restart the Docker service:
+
+   ```bash
+   sudo systemctl restart docker
+   ```
+
+3. **Retry Docker Compose**:
+   Try running your Docker Compose setup again:
+
+   ```bash
+   docker-compose up -d
+   ```
+
+### Additional Tips
+
+- **Check Your Proxy Settings**: If you're behind a proxy, ensure Docker is configured to use the proxy.
+- **Increase Retry Limit**: Modify the retry behavior of `pip` by adding retry settings in your `Dockerfile`:
+
+   ```dockerfile
+   RUN pip install --no-cache-dir --retries 10 --timeout 30 -r requirements.txt
+   ```
+
+### Example Dockerfile with Adjusted Pip Settings
+
+Here’s how you can modify your Dockerfile to handle transient network issues better:
+
+```dockerfile
+FROM python:3.12
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --retries 10 --timeout 30 -r requirements.txt
+
+COPY . .
+
+CMD ["python", "app.py"]
+```
+
+### Retry the Docker Build and Compose
+
+After making these changes, retry the build and compose process:
+
+```bash
+docker-compose up -d --build
+```
+
+These steps should help you address the network connectivity issues during the Docker build process. If you still encounter issues, verify that there are no firewall rules or other network policies blocking Docker's access to the internet.
